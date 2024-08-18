@@ -8,8 +8,14 @@ const mongoose = require('mongoose')
 
 const url = "mongodb+srv://mathewalex:123@cluster0.buv2y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-const userModel = require('./models/User.js')
+const Schema = mongoose.Schema;
 
+const UserSchema = new Schema({
+  username: String
+});
+
+// Correcting the export syntax
+const userModel = mongoose.model('User', UserSchema);
 
 
 app.use(express.urlencoded({extended:false}))
