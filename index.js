@@ -54,6 +54,46 @@ app.post('/api/users', async function(req, res) {
     res.status(500).json({ error: 'Failed to create user' });
   }
 });
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await userModel.find({}, 'username _id');
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+app.get('/api/users/:_id/logs', async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const user = await userModel.findById(_id);
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    let query = exerciseModel.find({ userId: _id });
+
+    // Apply `from`, `to`, and `limit` query parameters if provided
+    if (req.query.from) query = query.where('date').gte(new Date(req.query.from));
+    if (req.query.to) query = query.where('date').lte(new Date(req.query.to));
+    if (req.query.limit) query = query.limit(parseInt(req.query.limit));
+
+    const log = await query.select('description duration date').exec();
+
+    res.json({
+      username: user.username,
+      count: log.length,
+      _id: user._id,
+      log: log.map(ex => ({
+        description: ex.description,
+        duration: ex.duration,
+        date: ex.date.toDateString()
+      }))
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch logs' });
+  }
+});
 
 
 app.post('/api/users/:_id/exercises', async function(req, res) {
