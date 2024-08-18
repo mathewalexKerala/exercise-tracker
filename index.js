@@ -8,7 +8,7 @@ const mongoose = require('mongoose')
 
 const url = "mongodb+srv://mathewalex:123@cluster0.buv2y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-const userModel = require('./models/User')
+const userModel = require('./models/User.js')
 
 
 
